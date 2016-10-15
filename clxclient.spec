@@ -10,7 +10,6 @@ Patch0:		makefile.patch
 URL:		http://kokkinizita.linuxaudio.org/linuxaudio/
 BuildRequires:	clthreads-devel
 BuildRequires:	freetype-devel
-BuildRequires:	freetype-devel
 BuildRequires:	xorg-lib-libX11-devel
 BuildRequires:	xorg-lib-libXft-devel
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -22,6 +21,9 @@ clxclient library, used by Kokkini Zita Linux Audio projects.
 Summary:	Header files for %{name} library
 Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki %{name}
 Group:		Development/Libraries
+Requires:	freetype-devel
+Requires:	xorg-lib-libX11-devel
+Requires:	xorg-lib-libXft-devel
 Requires:	%{name} = %{version}-%{release}
 
 %description devel
