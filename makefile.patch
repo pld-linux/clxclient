@@ -1,16 +1,18 @@
-diff -dur clxclient-3.9.0.orig/Makefile clxclient-3.9.0/Makefile
---- clxclient-3.9.0.orig/Makefile	2013-06-28 16:50:51.000000000 +0200
-+++ clxclient-3.9.0/Makefile	2016-10-15 12:44:49.260424973 +0200
-@@ -31,7 +31,7 @@
+--- clxclient-3.9.2/source/Makefile.orig	2018-08-24 20:50:31.000000000 +0200
++++ clxclient-3.9.2/source/Makefile	2021-09-27 19:15:58.074346409 +0200
+@@ -30,17 +30,16 @@ MINVERS = 9.2
  VERSION = $(MAJVERS).$(MINVERS)
  
  
--CPPFLAGS += -Wall -I. -I/usr/X11R6/include `freetype-config --cflags` -fpic -DVERSION=\"$(VERSION)\" -D_REENTRANT -D_POSIX_PTHREAD_SEMANTICS -O2 
-+CPPFLAGS += -Wall -I. -I/usr/X11R6/include `freetype-config --cflags` -fpic -DVERSION=\"$(VERSION)\" -D_REENTRANT -D_POSIX_PTHREAD_SEMANTICS
- LDFLAGS += -L/usr/X11R6/$(LIBDIR) `freetype-config --libs`
+-CPPFLAGS += $(shell pkgconf --cflags freetype2) 
++CPPFLAGS += -I. $(shell pkg-config --cflags xft)
+ CPPFLAGS += -DVERSION=\"$(VERSION)\" -D_REENTRANT -D_POSIX_PTHREAD_SEMANTICS $(PCONFCFL)
+-CXXFLAGS += -Wall -O2 -fPIC 
+-CXXFLAGS += -march=native
++CXXFLAGS += -Wall -fPIC
  LDLIBS +=
  
-@@ -39,21 +39,21 @@
+ 
  CLXCLIENT_SO = libclxclient.so
  CLXCLIENT_MAJ = $(CLXCLIENT_SO).$(MAJVERS)
  CLXCLIENT_MIN = $(CLXCLIENT_MAJ).$(MINVERS)
@@ -19,19 +21,12 @@ diff -dur clxclient-3.9.0.orig/Makefile clxclient-3.9.0/Makefile
  CLXCLIENT_O = xdisplay.o xresman.o xhandler.o xwindow.o xdraw.o \
  	button.o textip.o enumip.o menuwin.o scale.o slider.o scroll.o mclist.o meter.o
  CLXCLIENT_H = clxclient.h
- 
- 
- $(CLXCLIENT_MIN): $(CLXCLIENT_O)
--	g++ -shared $(LDFLAGS) -Wl,-soname,$(CLXCLIENT_MAJ) -o $(CLXCLIENT_MIN) $(CLXCLIENT_O) $(CLXCLIENT_DEP)
-+	$(CXX) -shared $(LDFLAGS) -Wl,-soname,$(CLXCLIENT_MAJ) -o $(CLXCLIENT_MIN) $(CLXCLIENT_O) $(CLXCLIENT_DEP)
- 
- 
- install:	$(CLXCLIENT_MIN)
- 	install -d $(PREFIX)/$(LIBDIR)
- 	install -m 644 $(CLXCLIENT_H) $(PREFIX)/include
- 	install -m 755 $(CLXCLIENT_MIN) $(PREFIX)/$(LIBDIR)
+@@ -55,7 +54,7 @@ install:	$(CLXCLIENT_MIN)
+ 	install -d $(DESTDIR)$(LIBDIR)
+ 	install -m 644 $(CLXCLIENT_H) $(DESTDIR)$(INCDIR)
+ 	install -m 755 $(CLXCLIENT_MIN) $(DESTDIR)$(LIBDIR)
 -	ldconfig
-+	/sbin/ldconfig -n -N $(PREFIX)/$(LIBDIR)
- 	ln -sf $(CLXCLIENT_MIN) $(PREFIX)/$(LIBDIR)/$(CLXCLIENT_SO)
++	-/sbin/ldconfig -n -N $(DESTDIR)$(LIBDIR)
+ 	ln -sf $(CLXCLIENT_MIN) $(DESTDIR)$(LIBDIR)/$(CLXCLIENT_SO)
  
- 
+ uninstall:
